@@ -4,15 +4,15 @@ import { useState } from "react";
 import { classifyTexture } from "@/lib/analyzer";
 import type { BoardCard, Rank, Suit, TextureLabel } from "@/lib/analyzer";
 
-const RANKS: Rank[] = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"];
-const SUITS: { value: Suit; symbol: string; color: string }[] = [
+export const RANKS: Rank[] = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"];
+export const SUITS: { value: Suit; symbol: string; color: string }[] = [
   { value: "s", symbol: "♠", color: "var(--text-primary)" },
   { value: "h", symbol: "♥", color: "#ef4444" },
   { value: "d", symbol: "♦", color: "#ef4444" },
   { value: "c", symbol: "♣", color: "var(--text-primary)" },
 ];
 
-const TEXTURE_COLORS: Record<TextureLabel, string> = {
+export const TEXTURE_COLORS: Record<TextureLabel, string> = {
   dry:      "#6b7280",
   paired:   "#f59e0b",
   wet:      "#3b82f6",
@@ -32,7 +32,7 @@ interface CardPickerProps {
   label: string;
 }
 
-function CardPicker({ value, onChange, usedCards, label }: CardPickerProps) {
+export function CardPicker({ value, onChange, usedCards, label }: CardPickerProps) {
   const [pickingRank, setPickingRank] = useState<Rank | null>(null);
 
   const isUsed = (rank: Rank, suit: Suit) =>
@@ -58,7 +58,6 @@ function CardPicker({ value, onChange, usedCards, label }: CardPickerProps) {
     >
       <p className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>{label}</p>
 
-      {/* Selected card display */}
       {value ? (
         <div className="flex items-center justify-between">
           <span className="text-2xl font-black" style={{ color: suitInfo?.color }}>
@@ -78,7 +77,6 @@ function CardPicker({ value, onChange, usedCards, label }: CardPickerProps) {
         </div>
       )}
 
-      {/* Rank picker */}
       {!value && (
         <>
           <div className="flex flex-wrap gap-1">
@@ -96,8 +94,6 @@ function CardPicker({ value, onChange, usedCards, label }: CardPickerProps) {
               </button>
             ))}
           </div>
-
-          {/* Suit picker — shows after rank selected */}
           {pickingRank && (
             <div className="flex gap-2">
               {SUITS.map(({ value: sv, symbol, color }) => {
@@ -107,7 +103,7 @@ function CardPicker({ value, onChange, usedCards, label }: CardPickerProps) {
                     key={sv}
                     onClick={() => handleSuit(sv)}
                     disabled={used}
-                    className="flex-1 py-1.5 rounded-lg text-base font-bold transition-colors"
+                    className="flex-1 py-1.5 rounded-lg text-base font-bold"
                     style={{
                       background: "var(--surface)",
                       color: used ? "var(--border)" : color,
@@ -142,8 +138,6 @@ export default function BoardBuilder({
   onChange, onNext, onBack,
 }: Props) {
   const hasFlop = board.length >= 3;
-  const hasTurn = board.length >= 4;
-
   const texture = hasFlop ? classifyTexture(board.slice(0, 3)) : null;
 
   function updateCard(index: number, card: BoardCard | null) {
@@ -160,7 +154,6 @@ export default function BoardBuilder({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Stack / pot inputs */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-secondary)" }}>
@@ -188,10 +181,10 @@ export default function BoardBuilder({
         </div>
       </div>
 
-      {/* Flop */}
+      {/* Flop only — turn/river handled per-street in the wizard */}
       <div>
         <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-secondary)" }}>
-          Flop (required)
+          Flop Cards
         </p>
         <div className="flex gap-3 flex-wrap">
           {[0, 1, 2].map(i => (
@@ -204,8 +197,6 @@ export default function BoardBuilder({
             />
           ))}
         </div>
-
-        {/* Texture badge */}
         {texture && (
           <div className="flex items-center gap-2 mt-3">
             <span
@@ -225,41 +216,10 @@ export default function BoardBuilder({
         )}
       </div>
 
-      {/* Turn */}
-      {hasFlop && (
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-secondary)" }}>
-            Turn (optional)
-          </p>
-          <CardPicker
-            label="Turn card"
-            value={board[3] ?? null}
-            onChange={card => updateCard(3, card)}
-            usedCards={board.filter((_, idx) => idx !== 3)}
-          />
-        </div>
-      )}
-
-      {/* River */}
-      {hasTurn && (
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-secondary)" }}>
-            River (optional)
-          </p>
-          <CardPicker
-            label="River card"
-            value={board[4] ?? null}
-            onChange={card => updateCard(4, card)}
-            usedCards={board.filter((_, idx) => idx !== 4)}
-          />
-        </div>
-      )}
-
-      {/* Nav */}
       <div className="flex gap-3">
         <button
           onClick={onBack}
-          className="flex-1 py-3 rounded-xl text-sm font-bold border transition-all"
+          className="flex-1 py-3 rounded-xl text-sm font-bold border"
           style={{ background: "transparent", borderColor: "var(--border)", color: "var(--text-secondary)" }}
         >
           ← Back
@@ -274,7 +234,7 @@ export default function BoardBuilder({
             cursor: canNext ? "pointer" : "not-allowed",
           }}
         >
-          Next: Enter Action →
+          Next: Flop Action →
         </button>
       </div>
     </div>

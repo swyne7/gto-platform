@@ -517,6 +517,29 @@ export function formatActionLabel(
   return labels[action];
 }
 
+// ── Pot progression between streets ──────────────────────────────────────────
+
+export function calculateNewPot(
+  currentPot: number,
+  heroAction: PostflopAction,
+  heroSizingBB: number | undefined,
+  villainBetSizingBB: number | undefined,
+): number {
+  if (heroAction === "fold") return currentPot;
+  if (heroAction === "check") return currentPot;
+  if (heroAction === "call" && villainBetSizingBB) {
+    return Math.round((currentPot + villainBetSizingBB * 2) * 10) / 10;
+  }
+  if (heroAction === "bet" && heroSizingBB) {
+    // Assume villain calls for pot estimation
+    return Math.round((currentPot + heroSizingBB * 2) * 10) / 10;
+  }
+  if (heroAction === "raise" && heroSizingBB && villainBetSizingBB) {
+    return Math.round((currentPot + villainBetSizingBB + heroSizingBB) * 10) / 10;
+  }
+  return currentPot;
+}
+
 // ── Full analysis runner ──────────────────────────────────────────────────────
 
 export function runAnalysis(state: HandState): AnalysisResult {
