@@ -1,4 +1,4 @@
-// Preflop GTO ranges for 100BB cash game (6-max)
+// Preflop GTO ranges for 100BB cash game (9-max)
 // Values: 1.0 = always, 0.5 = mixed (50%), 0.0 = never
 // Source: GTO approximations based on standard solver outputs
 
@@ -38,6 +38,63 @@ const UTG: PositionRanges = {
     AJo: 0.5, ATo: 0.25,
     KQo: 0.75, KJo: 0.5,
     "77": 0.75, "66": 0.5, "55": 0.5, "44": 0.25,
+  },
+};
+
+// ── UTG+1 ────────────────────────────────────────────────────────────────────
+const UTG1: PositionRanges = {
+  open: {
+    AA: 1, KK: 1, QQ: 1, JJ: 1, TT: 1, "99": 1, "88": 1, "77": 0.5,
+    AKs: 1, AKo: 1, AQs: 1, AQo: 1, AJs: 1, AJo: 0.75, ATs: 1, ATo: 0.5,
+    A9s: 0.5, A5s: 0.5,
+    KQs: 1, KQo: 1, KJs: 1, KJo: 0.5, KTs: 1,
+    K9s: 0.25,
+    QJs: 1, QTs: 1, Q9s: 0.5,
+    JTs: 1, J9s: 0.5,
+    T9s: 1, T8s: 0.5,
+    "98s": 0.75, "87s": 0.75, "76s": 0.75,
+    "65s": 0.5, "54s": 0.5,
+    "66": 0.25, "55": 0.25,
+  },
+};
+
+// ── UTG+2 ────────────────────────────────────────────────────────────────────
+const UTG2: PositionRanges = {
+  open: {
+    AA: 1, KK: 1, QQ: 1, JJ: 1, TT: 1, "99": 1, "88": 1, "77": 0.75, "66": 0.5,
+    AKs: 1, AKo: 1, AQs: 1, AQo: 1, AJs: 1, AJo: 1, ATs: 1, ATo: 0.75,
+    A9s: 0.75, A8s: 0.5, A5s: 0.75, A4s: 0.25, A3s: 0.25,
+    KQs: 1, KQo: 1, KJs: 1, KJo: 0.75, KTs: 1, KTo: 0.25,
+    K9s: 0.5, K8s: 0.25,
+    QJs: 1, QJo: 0.5, QTs: 1, Q9s: 0.75,
+    JTs: 1, J9s: 0.75, J8s: 0.25,
+    T9s: 1, T8s: 0.75,
+    "98s": 1, "97s": 0.5,
+    "87s": 1, "86s": 0.5,
+    "76s": 1, "75s": 0.25,
+    "65s": 0.75, "54s": 0.5,
+    "55": 0.5, "44": 0.25,
+  },
+};
+
+// ── LJ (Lojack) ──────────────────────────────────────────────────────────────
+const LJ: PositionRanges = {
+  open: {
+    AA: 1, KK: 1, QQ: 1, JJ: 1, TT: 1, "99": 1, "88": 1, "77": 1, "66": 0.75,
+    "55": 0.5, "44": 0.25, "33": 0.25,
+    AKs: 1, AKo: 1, AQs: 1, AQo: 1, AJs: 1, AJo: 1, ATs: 1, ATo: 0.75,
+    A9s: 1, A9o: 0.25, A8s: 0.75, A7s: 0.5, A6s: 0.5,
+    A5s: 1, A4s: 0.75, A3s: 0.5, A2s: 0.5,
+    KQs: 1, KQo: 1, KJs: 1, KJo: 1, KTs: 1, KTo: 0.5,
+    K9s: 0.75, K8s: 0.5, K7s: 0.25,
+    QJs: 1, QJo: 0.75, QTs: 1, QTo: 0.5, Q9s: 1, Q8s: 0.5,
+    JTs: 1, JTo: 0.5, J9s: 1, J8s: 0.75, J7s: 0.25,
+    T9s: 1, T8s: 1, T7s: 0.5,
+    "98s": 1, "97s": 0.75, "96s": 0.5,
+    "87s": 1, "86s": 0.75, "85s": 0.25,
+    "76s": 1, "75s": 0.5,
+    "65s": 1, "64s": 0.5,
+    "54s": 0.75, "53s": 0.25,
   },
 };
 
@@ -181,6 +238,9 @@ const BB: PositionRanges = {
 
 export const RANGES: Record<string, PositionRanges> = {
   UTG,
+  "UTG+1": UTG1,
+  "UTG+2": UTG2,
+  LJ,
   HJ,
   CO,
   BTN,

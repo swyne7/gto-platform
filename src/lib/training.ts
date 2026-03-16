@@ -1,7 +1,7 @@
 import { RANGES, getComboKey } from "@/data/preflop-ranges";
 import type { RangeData } from "@/data/preflop-ranges";
 
-export type Position = "UTG" | "HJ" | "CO" | "BTN" | "SB" | "BB";
+export type Position = "UTG" | "UTG+1" | "UTG+2" | "LJ" | "HJ" | "CO" | "BTN" | "SB" | "BB";
 export type TrainingAction = "open" | "3bet_vs_btn" | "3bet_vs_co" | "call_open_vs_btn";
 
 export interface TrainingSpot {
@@ -31,16 +31,19 @@ const ACTION_LABELS: Record<string, string> = {
 
 // Weighted spot selection — favor common positions
 const SPOT_POOL: Array<{ position: Position; action: TrainingAction }> = [
-  { position: "BTN", action: "open" },
-  { position: "BTN", action: "open" },
-  { position: "CO",  action: "open" },
-  { position: "CO",  action: "open" },
-  { position: "UTG", action: "open" },
-  { position: "HJ",  action: "open" },
-  { position: "SB",  action: "open" },
-  { position: "SB",  action: "3bet_vs_btn" },
-  { position: "BB",  action: "3bet_vs_btn" },
-  { position: "BB",  action: "call_open_vs_btn" },
+  { position: "BTN",    action: "open" },
+  { position: "BTN",    action: "open" },
+  { position: "CO",     action: "open" },
+  { position: "CO",     action: "open" },
+  { position: "UTG",    action: "open" },
+  { position: "UTG+1",  action: "open" },
+  { position: "UTG+2",  action: "open" },
+  { position: "LJ",     action: "open" },
+  { position: "HJ",     action: "open" },
+  { position: "SB",     action: "open" },
+  { position: "SB",     action: "3bet_vs_btn" },
+  { position: "BB",     action: "3bet_vs_btn" },
+  { position: "BB",     action: "call_open_vs_btn" },
 ];
 
 function randomHand(): { row: number; col: number; combo: string } {

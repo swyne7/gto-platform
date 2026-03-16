@@ -5,15 +5,18 @@ import HandGrid from "@/components/range/HandGrid";
 import { RANGES, getComboKey } from "@/data/preflop-ranges";
 import type { RangeData } from "@/data/preflop-ranges";
 
-const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"] as const;
+const POSITIONS = ["UTG", "UTG+1", "UTG+2", "LJ", "HJ", "CO", "BTN", "SB", "BB"] as const;
 
 const ACTION_OPTIONS: Record<string, string[]> = {
-  UTG: ["open"],
-  HJ:  ["open"],
-  CO:  ["open"],
-  BTN: ["open"],
-  SB:  ["open", "3bet_vs_btn"],
-  BB:  ["3bet_vs_btn", "3bet_vs_co", "call_open_vs_btn"],
+  UTG:      ["open"],
+  "UTG+1":  ["open"],
+  "UTG+2":  ["open"],
+  LJ:       ["open"],
+  HJ:       ["open"],
+  CO:       ["open"],
+  BTN:      ["open"],
+  SB:       ["open", "3bet_vs_btn"],
+  BB:       ["3bet_vs_btn", "3bet_vs_co", "call_open_vs_btn"],
 };
 
 const ACTION_LABELS: Record<string, string> = {
@@ -71,7 +74,7 @@ export default function RangesPage() {
           Range Viewer
         </h1>
         <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
-          100BB cash game · 6-max · GTO opening ranges
+          100BB cash game · 9-max · GTO opening ranges
         </p>
       </div>
 
@@ -226,15 +229,29 @@ export default function RangesPage() {
             </p>
             <ul className="text-xs space-y-1.5" style={{ color: "var(--text-secondary)" }}>
               {position === "UTG" && <>
-                <li>• Tightest opening range (~14%)</li>
-                <li>• 5 players left to act</li>
-                <li>• Value-heavy — avoid weak offsuit hands</li>
-                <li>• Suited connectors play well for balance</li>
+                <li>• Tightest range (~12%) — 8 players to act</li>
+                <li>• Value-heavy, avoid weak offsuit hands</li>
+                <li>• Suited connectors for balance only</li>
+              </>}
+              {position === "UTG+1" && <>
+                <li>• Slightly wider than UTG (~14%)</li>
+                <li>• 7 players left to act</li>
+                <li>• Add A9s, some suited connectors</li>
+              </>}
+              {position === "UTG+2" && <>
+                <li>• Opening up to ~16%</li>
+                <li>• 6 players left to act</li>
+                <li>• Add small pairs, more suited aces</li>
+              </>}
+              {position === "LJ" && <>
+                <li>• Lojack (~18%) — 5 players to act</li>
+                <li>• Add all suited aces, most suited broadways</li>
+                <li>• Small pairs become profitable here</li>
               </>}
               {position === "HJ" && <>
-                <li>• Slightly wider than UTG (~18%)</li>
-                <li>• Add more suited aces and connectors</li>
-                <li>• 4 players left to act</li>
+                <li>• Hijack (~21%) — 4 players to act</li>
+                <li>• Add suited gappers and weaker Kx</li>
+                <li>• Start including more offsuit broadways</li>
               </>}
               {position === "CO" && <>
                 <li>• Wide opening range (~25%)</li>
