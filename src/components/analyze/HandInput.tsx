@@ -33,13 +33,42 @@ interface Props {
   onNext: () => void;
 }
 
+function getHintRange(
+  heroPos: Position | null,
+  villainPos: Position | null,
+  scenario: PreflopScenario,
+): { range: RangeData; label: string } {
+  if (!heroPos) return { range: {}, label: "Select your position to see range" };
+
+  switch (scenario) {
+    case "single_raised_ip":
+      return {
+        range: RANGES[heroPos]?.["open"] ?? {},
+        label: `${heroPos} opening range`,
+      };
+    case "single_raised_oop":
+      return {
+        range: RANGES[heroPos]?.["call"] ?? {},
+        label: `${heroPos} calling range${villainPos ? ` vs ${villainPos}` : ""}`,
+      };
+    case "three_bet_ip":
+      return {
+        range: RANGES[heroPos]?.["3bet"] ?? RANGES[heroPos]?.["open"] ?? {},
+        label: `${heroPos} 3-bet range${villainPos ? ` vs ${villainPos}` : ""}`,
+      };
+    case "three_bet_oop":
+      return {
+        range: RANGES[heroPos]?.["3bet"] ?? {},
+        label: `${heroPos} 3-bet range${villainPos ? ` vs ${villainPos}` : ""}`,
+      };
+  }
+}
+
 export default function HandInput({
   heroHand, heroCard1, heroCard2, heroPosition, villainPosition, preflopScenario,
   onHeroHand, onHeroCards, onHeroPosition, onVillainPosition, onScenario, onNext,
 }: Props) {
-  const hintRange: RangeData = heroPosition
-    ? (RANGES[heroPosition]?.["open"] ?? {})
-    : {};
+  const { range: hintRange, label: rangeLabel } = getHintRange(heroPosition, villainPosition, preflopScenario);
 
   const usedCards: BoardCard[] = [
     ...(heroCard1 ? [heroCard1] : []),
@@ -143,7 +172,10 @@ export default function HandInput({
           )}
         </div>
         <p className="text-xs mb-3" style={{ color: "var(--text-secondary)" }}>
-          Pick both cards with exact suits. The grid below shows your position range as a guide.
+          Pick both cards with exact suits.{" "}
+          {heroPosition
+            ? <span>Grid shows <strong style={{ color: "var(--text-primary)" }}>{rangeLabel}</strong> as a reference.</span>
+            : "Select your position first."}
         </p>
         <div className="flex gap-3 flex-wrap mb-4">
           <CardPicker
