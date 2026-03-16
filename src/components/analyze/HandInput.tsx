@@ -42,24 +42,41 @@ function getHintRange(
 
   switch (scenario) {
     case "single_raised_ip":
+      // Hero opened — show hero's opening range (updates with hero position)
       return {
         range: RANGES[heroPos]?.["open"] ?? {},
-        label: `${heroPos} opening range`,
+        label: `${heroPos} opening range (your open)`,
       };
     case "single_raised_oop":
+      // Hero defended vs villain's open — show villain's opening range so hero
+      // can see what range they're defending against (updates with villain position)
+      if (villainPos) {
+        return {
+          range: RANGES[villainPos]?.["open"] ?? {},
+          label: `${villainPos} opening range (villain's open you called)`,
+        };
+      }
       return {
         range: RANGES[heroPos]?.["call"] ?? {},
-        label: `${heroPos} calling range${villainPos ? ` vs ${villainPos}` : ""}`,
+        label: `${heroPos} calling range (select villain to see their opens)`,
       };
     case "three_bet_ip":
-      return {
-        range: RANGES[heroPos]?.["3bet"] ?? RANGES[heroPos]?.["open"] ?? {},
-        label: `${heroPos} 3-bet range${villainPos ? ` vs ${villainPos}` : ""}`,
-      };
-    case "three_bet_oop":
+      // Hero is IP in 3-bet pot — show villain's opening range they 3-bet against
+      if (villainPos) {
+        return {
+          range: RANGES[villainPos]?.["open"] ?? {},
+          label: `${villainPos} opening range (villain's open you 3-bet)`,
+        };
+      }
       return {
         range: RANGES[heroPos]?.["3bet"] ?? {},
-        label: `${heroPos} 3-bet range${villainPos ? ` vs ${villainPos}` : ""}`,
+        label: `${heroPos} 3-bet range (select villain to see their opens)`,
+      };
+    case "three_bet_oop":
+      // Hero 3-bet OOP — show hero's 3-bet range (updates with hero position)
+      return {
+        range: RANGES[heroPos]?.["3bet"] ?? {},
+        label: `${heroPos} 3-bet range (your 3-bet)`,
       };
   }
 }
