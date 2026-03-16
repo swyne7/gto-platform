@@ -4,7 +4,7 @@ const QUICK_ACTIONS = [
   { href: "/train",   label: "Start Training",    desc: "Random preflop spots", accent: "#22c55e" },
   { href: "/ranges",  label: "View Ranges",       desc: "Browse GTO charts",    accent: "#3b82f6" },
   { href: "/solver",  label: "Postflop Solver",   desc: "Coming soon",          accent: "#f59e0b", disabled: true },
-  { href: "/analyze", label: "Analyze a Hand",    desc: "Coming soon",          accent: "#8b5cf6", disabled: true },
+  { href: "/analyze", label: "Analyze a Hand",    desc: "GTO coaching + feedback", accent: "#8b5cf6" },
 ];
 
 const STATS = [
