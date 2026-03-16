@@ -161,8 +161,12 @@ export default function AnalyzePage() {
     setDraft(prev => ({ ...prev, ...partial }));
   }
 
-  function updateStreet(street: "flop" | "turn" | "river", partial: Partial<StreetState>) {
-    setDraft(prev => ({ ...prev, [street]: { ...prev[street], ...partial } }));
+  function updateStreet(street: "flop" | "turn" | "river", partial: Record<string, unknown>) {
+    // Convert null → undefined so optional fields are truly cleared
+    const cleaned = Object.fromEntries(
+      Object.entries(partial).map(([k, v]) => [k, v === null ? undefined : v])
+    ) as Partial<StreetState>;
+    setDraft(prev => ({ ...prev, [street]: { ...prev[street], ...cleaned } }));
   }
 
   // Hole cards — blocked everywhere on the board
