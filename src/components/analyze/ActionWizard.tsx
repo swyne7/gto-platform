@@ -2,6 +2,7 @@
 
 import { calculatePotOdds, calculateMDF } from "@/lib/analyzer";
 import type { PostflopAction, BoardCard } from "@/lib/analyzer";
+import HoleCardsDisplay from "@/components/analyze/HoleCardsDisplay";
 
 const ACTIONS: { value: PostflopAction; label: string }[] = [
   { value: "check", label: "Check" },
@@ -28,6 +29,8 @@ interface Props {
   heroAction: PostflopAction | null;
   heroSizingBB: number | undefined;
   villainBetSizingBB: number | undefined;
+  heroCard1?: BoardCard | null;
+  heroCard2?: BoardCard | null;
   onChange: (update: {
     heroAction?: PostflopAction;
     heroSizingBB?: number;
@@ -57,6 +60,7 @@ function CardDisplay({ card }: { card: BoardCard }) {
 export default function ActionWizard({
   board, potAfterPreflopBB, effectiveStackBB,
   heroAction, heroSizingBB, villainBetSizingBB,
+  heroCard1, heroCard2,
   onChange, onAnalyze, onBack,
 }: Props) {
   const needsSizing = heroAction === "bet" || heroAction === "raise";
@@ -75,6 +79,11 @@ export default function ActionWizard({
 
   return (
     <div className="flex flex-col gap-6">
+
+      {/* Hole cards + hand evaluation */}
+      {heroCard1 && heroCard2 && (
+        <HoleCardsDisplay card1={heroCard1} card2={heroCard2} board={board} />
+      )}
 
       {/* Board display */}
       <div>

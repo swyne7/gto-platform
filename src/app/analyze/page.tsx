@@ -37,6 +37,8 @@ interface FullDraft {
   heroPosition: Position | null;
   villainPosition: Position | null;
   heroHand: string;
+  heroCard1: BoardCard | null;
+  heroCard2: BoardCard | null;
   preflopScenario: PreflopScenario;
   effectiveStackBB: number;
   potAfterPreflopBB: number;
@@ -52,6 +54,8 @@ const DEFAULT_DRAFT: FullDraft = {
   heroPosition: null,
   villainPosition: null,
   heroHand: "",
+  heroCard1: null,
+  heroCard2: null,
   preflopScenario: "single_raised_ip",
   effectiveStackBB: 100,
   potAfterPreflopBB: 6.5,
@@ -242,6 +246,8 @@ export default function AnalyzePage() {
                 board={s.board}
                 result={s.result}
                 potAtStart={s.potAtStart}
+                heroCard1={draft.heroCard1}
+                heroCard2={draft.heroCard2}
                 isExpanded={!!expandedStreets[s.streetName] || isLast}
                 onToggleExpand={() => toggleStreet(s.streetName)}
                 showNav={showNav}
@@ -264,10 +270,13 @@ export default function AnalyzePage() {
           {phase === "setup" && (
             <HandInput
               heroHand={draft.heroHand}
+              heroCard1={draft.heroCard1}
+              heroCard2={draft.heroCard2}
               heroPosition={draft.heroPosition}
               villainPosition={draft.villainPosition}
               preflopScenario={draft.preflopScenario}
               onHeroHand={hand => updateDraft({ heroHand: hand })}
+              onHeroCards={(c1, c2) => updateDraft({ heroCard1: c1, heroCard2: c2 })}
               onHeroPosition={pos => updateDraft({ heroPosition: pos })}
               onVillainPosition={pos => updateDraft({ villainPosition: pos })}
               onScenario={s => updateDraft({
@@ -308,6 +317,8 @@ export default function AnalyzePage() {
               heroAction={draft.flop.heroAction}
               heroSizingBB={draft.flop.heroSizingBB}
               villainBetSizingBB={draft.flop.villainBetSizingBB}
+              heroCard1={draft.heroCard1}
+              heroCard2={draft.heroCard2}
               onChange={u => updateStreet("flop", u)}
               onAnalyze={() => analyzeStreet("flop")}
               onBack={() => setPhase("flop_board")}
@@ -337,6 +348,8 @@ export default function AnalyzePage() {
               heroAction={draft.turn.heroAction}
               heroSizingBB={draft.turn.heroSizingBB}
               villainBetSizingBB={draft.turn.villainBetSizingBB}
+              heroCard1={draft.heroCard1}
+              heroCard2={draft.heroCard2}
               onChange={u => updateStreet("turn", u)}
               onAnalyze={() => analyzeStreet("turn")}
               onBack={() => setPhase("turn_card")}
@@ -366,6 +379,8 @@ export default function AnalyzePage() {
               heroAction={draft.river.heroAction}
               heroSizingBB={draft.river.heroSizingBB}
               villainBetSizingBB={draft.river.villainBetSizingBB}
+              heroCard1={draft.heroCard1}
+              heroCard2={draft.heroCard2}
               onChange={u => updateStreet("river", u)}
               onAnalyze={() => analyzeStreet("river")}
               onBack={() => setPhase("river_card")}
@@ -379,6 +394,8 @@ export default function AnalyzePage() {
         <HandSummary
           streets={completedStreets}
           heroHand={draft.heroHand}
+          heroCard1={draft.heroCard1}
+          heroCard2={draft.heroCard2}
           onReset={reset}
         />
       )}

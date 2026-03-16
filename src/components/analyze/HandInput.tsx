@@ -1,10 +1,13 @@
 "use client";
 
 import HandGrid from "@/components/range/HandGrid";
+import { CardPicker } from "@/components/analyze/BoardBuilder";
+import { cardsToComboKey } from "@/lib/handEvaluator";
 import { RANGES } from "@/data/preflop-ranges";
 import type { RangeData } from "@/data/preflop-ranges";
 import type { Position } from "@/lib/training";
 import type { PreflopScenario } from "@/lib/analyzer";
+import type { BoardCard } from "@/lib/analyzer";
 
 const POSITIONS: Position[] = ["UTG", "UTG+1", "UTG+2", "LJ", "HJ", "CO", "BTN", "SB", "BB"];
 
@@ -17,10 +20,13 @@ const SCENARIO_OPTIONS: { value: PreflopScenario; label: string; desc: string }[
 
 interface Props {
   heroHand: string;
+  heroCard1: BoardCard | null;
+  heroCard2: BoardCard | null;
   heroPosition: Position | null;
   villainPosition: Position | null;
   preflopScenario: PreflopScenario;
   onHeroHand: (hand: string) => void;
+  onHeroCards: (c1: BoardCard | null, c2: BoardCard | null) => void;
   onHeroPosition: (pos: Position) => void;
   onVillainPosition: (pos: Position) => void;
   onScenario: (s: PreflopScenario) => void;
@@ -28,15 +34,31 @@ interface Props {
 }
 
 export default function HandInput({
-  heroHand, heroPosition, villainPosition, preflopScenario,
-  onHeroHand, onHeroPosition, onVillainPosition, onScenario, onNext,
+  heroHand, heroCard1, heroCard2, heroPosition, villainPosition, preflopScenario,
+  onHeroHand, onHeroCards, onHeroPosition, onVillainPosition, onScenario, onNext,
 }: Props) {
-  // Show a hint range on the grid based on hero's position
   const hintRange: RangeData = heroPosition
     ? (RANGES[heroPosition]?.["open"] ?? {})
     : {};
 
-  const canNext = !!heroHand && !!heroPosition && !!villainPosition;
+  const usedCards: BoardCard[] = [
+    ...(heroCard1 ? [heroCard1] : []),
+    ...(heroCard2 ? [heroCard2] : []),
+  ];
+
+  function handleCard1(card: BoardCard | null) {
+    const c2 = heroCard2;
+    onHeroCards(card, c2);
+    if (card && c2) onHeroHand(cardsToComboKey(card, c2));
+  }
+
+  function handleCard2(card: BoardCard | null) {
+    const c1 = heroCard1;
+    onHeroCards(c1, card);
+    if (c1 && card) onHeroHand(cardsToComboKey(c1, card));
+  }
+
+  const canNext = !!heroCard1 && !!heroCard2 && !!heroPosition && !!villainPosition;
 
   return (
     <div className="flex flex-col gap-6">
@@ -108,11 +130,11 @@ export default function HandInput({
         </div>
       </div>
 
-      {/* Hand selector */}
+      {/* Exact hole cards */}
       <div>
         <div className="flex items-center justify-between mb-2">
           <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-secondary)" }}>
-            Your Hand
+            Your Hole Cards
           </p>
           {heroHand && (
             <span className="text-lg font-black" style={{ color: "var(--accent-green)" }}>
@@ -121,14 +143,25 @@ export default function HandInput({
           )}
         </div>
         <p className="text-xs mb-3" style={{ color: "var(--text-secondary)" }}>
-          {heroPosition
-            ? `Grid shows ${heroPosition} opening range as a guide. Click any cell to select your hand.`
-            : "Select your position first, then click your hand on the grid."}
+          Pick both cards with exact suits. The grid below shows your position range as a guide.
         </p>
+        <div className="flex gap-3 flex-wrap mb-4">
+          <CardPicker
+            label="Card 1"
+            value={heroCard1}
+            onChange={handleCard1}
+            usedCards={usedCards.filter(c => c !== heroCard1)}
+          />
+          <CardPicker
+            label="Card 2"
+            value={heroCard2}
+            onChange={handleCard2}
+            usedCards={usedCards.filter(c => c !== heroCard2)}
+          />
+        </div>
         <HandGrid
           range={hintRange}
           highlightCombo={heroHand || null}
-          onComboClick={onHeroHand}
           size="sm"
         />
       </div>

@@ -3,6 +3,7 @@
 import type { AnalysisResult, BoardCard, DecisionGrade } from "@/lib/analyzer";
 import StreetResultCard from "@/components/analyze/StreetResultCard";
 import { useState } from "react";
+import HoleCardsDisplay from "@/components/analyze/HoleCardsDisplay";
 
 interface StreetResult {
   streetName: "Flop" | "Turn" | "River";
@@ -26,10 +27,12 @@ const GRADE_CONFIG: Record<DecisionGrade, { label: string; color: string }> = {
 interface Props {
   streets: StreetResult[];
   heroHand: string;
+  heroCard1?: BoardCard | null;
+  heroCard2?: BoardCard | null;
   onReset: () => void;
 }
 
-export default function HandSummary({ streets, heroHand, onReset }: Props) {
+export default function HandSummary({ streets, heroHand, heroCard1, heroCard2, onReset }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
     Flop: true, Turn: true, River: true,
   });
@@ -105,6 +108,17 @@ export default function HandSummary({ streets, heroHand, onReset }: Props) {
         <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
           {overallText}
         </p>
+
+        {/* Hole cards on final board */}
+        {heroCard1 && heroCard2 && streets.length > 0 && (
+          <div className="mt-3">
+            <HoleCardsDisplay
+              card1={heroCard1}
+              card2={heroCard2}
+              board={streets[streets.length - 1].board}
+            />
+          </div>
+        )}
       </div>
 
       {/* Stats row */}
@@ -146,6 +160,8 @@ export default function HandSummary({ streets, heroHand, onReset }: Props) {
             board={s.board}
             result={s.result}
             potAtStart={s.potAtStart}
+            heroCard1={heroCard1}
+            heroCard2={heroCard2}
             isExpanded={!!expanded[s.streetName]}
             onToggleExpand={() =>
               setExpanded(prev => ({ ...prev, [s.streetName]: !prev[s.streetName] }))

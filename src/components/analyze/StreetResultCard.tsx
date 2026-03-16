@@ -2,6 +2,7 @@
 
 import type { AnalysisResult, BoardCard, DecisionGrade } from "@/lib/analyzer";
 import { TEXTURE_COLORS } from "@/components/analyze/BoardBuilder";
+import HoleCardsDisplay from "@/components/analyze/HoleCardsDisplay";
 
 const GRADE_CONFIG: Record<DecisionGrade, { label: string; color: string; bg: string }> = {
   gto_line:   { label: "GTO Line",   color: "#22c55e", bg: "#22c55e18" },
@@ -42,6 +43,8 @@ interface Props {
   potAtStart: number;
   isExpanded: boolean;
   onToggleExpand: () => void;
+  heroCard1?: BoardCard | null;
+  heroCard2?: BoardCard | null;
   // Navigation options — only shown when this is the current/last result
   showNav?: boolean;
   onAddTurn?: () => void;
@@ -52,6 +55,7 @@ interface Props {
 export default function StreetResultCard({
   streetName, board, result, potAtStart,
   isExpanded, onToggleExpand,
+  heroCard1, heroCard2,
   showNav, onAddTurn, onAddRiver, onViewSummary,
 }: Props) {
   const { grade, heroActionLabel, recommendedAction, recommendedSizingBB,
@@ -103,6 +107,11 @@ export default function StreetResultCard({
       {/* Expanded detail */}
       {isExpanded && (
         <div className="px-4 py-4 flex flex-col gap-4 border-t" style={{ borderColor: "var(--border)" }}>
+          {/* Hole cards + hand evaluation */}
+          {heroCard1 && heroCard2 && (
+            <HoleCardsDisplay card1={heroCard1} card2={heroCard2} board={board} />
+          )}
+
           {/* Metrics row */}
           <div className="flex gap-3 flex-wrap">
             <div
