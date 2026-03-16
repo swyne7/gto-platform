@@ -10,7 +10,7 @@ import HandSummary from "@/components/analyze/HandSummary";
 import { runAnalysis, calculateNewPot } from "@/lib/analyzer";
 import type { BoardCard, PostflopAction, AnalysisResult, HandState, PreflopScenario } from "@/lib/analyzer";
 import type { Position } from "@/lib/training";
-import { SUIT_SYMBOL, SUIT_COLOR } from "@/lib/handEvaluator";
+import { SUIT_SYMBOL, SUIT_COLOR, evaluateHand } from "@/lib/handEvaluator";
 
 // ── Phase machine ─────────────────────────────────────────────────────────────
 type Phase =
@@ -204,7 +204,11 @@ export default function AnalyzePage() {
       villainBetSizingBB: streetData.villainBetSizingBB,
     };
 
-    const result = runAnalysis(state);
+    const handEvalResult = draft.heroCard1 && draft.heroCard2
+      ? evaluateHand(draft.heroCard1, draft.heroCard2, board)
+      : null;
+
+    const result = runAnalysis(state, handEvalResult);
     updateStreet(street, { result });
 
     // Calculate pot for next street
