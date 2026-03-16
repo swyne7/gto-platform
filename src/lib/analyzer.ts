@@ -177,6 +177,14 @@ export function classifyTexture(board: BoardCard[]): BoardTexture {
 
 // ── Range advantage estimation ────────────────────────────────────────────────
 
+function get3betRangeKey(opener: Position, threebetor: Position): string {
+  if (opener === "BTN") return "3bet_vs_btn";
+  if (opener === "CO")  return "3bet_vs_co";
+  if (opener === "HJ")  return "3bet_vs_hj";
+  if (opener === "SB")  return "3bet_vs_sb";
+  return "3bet_vs_ep";
+}
+
 function getRangeKey(
   role: "hero" | "villain",
   state: HandState
@@ -186,16 +194,16 @@ function getRangeKey(
   if (role === "hero") {
     switch (preflopScenario) {
       case "single_raised_ip":  return { position: heroPosition, key: "open" };
-      case "single_raised_oop": return { position: heroPosition, key: "call" };
-      case "three_bet_ip":      return { position: heroPosition, key: "3bet" };
-      case "three_bet_oop":     return { position: heroPosition, key: "call" };
+      case "single_raised_oop": return { position: heroPosition, key: "call_open_vs_btn" };
+      case "three_bet_ip":      return { position: heroPosition, key: "open" };
+      case "three_bet_oop":     return { position: heroPosition, key: get3betRangeKey(villainPosition, heroPosition) };
     }
   } else {
     switch (preflopScenario) {
-      case "single_raised_ip":  return { position: villainPosition, key: "call" };
+      case "single_raised_ip":  return { position: villainPosition, key: "call_open_vs_btn" };
       case "single_raised_oop": return { position: villainPosition, key: "open" };
       case "three_bet_ip":      return { position: villainPosition, key: "open" };
-      case "three_bet_oop":     return { position: villainPosition, key: "3bet" };
+      case "three_bet_oop":     return { position: villainPosition, key: "open" };
     }
   }
 }

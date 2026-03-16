@@ -189,11 +189,29 @@ const SB: PositionRanges = {
     "54s": 1, "53s": 0.75, "52s": 0.5,
     "43s": 0.75, "42s": 0.5, "32s": 0.5,
   },
+  // SB 3-bet ranges vs each villain position
   "3bet_vs_btn": {
     AA: 1, KK: 1, QQ: 1, JJ: 1, TT: 0.5,
     AKs: 1, AKo: 1, AQs: 1, AQo: 0.75, AJs: 0.75,
     KQs: 0.5, A5s: 1, A4s: 1, A3s: 0.75, A2s: 0.5,
     "76s": 0.5, "65s": 0.5, "54s": 0.5,
+  },
+  "3bet_vs_co": {
+    AA: 1, KK: 1, QQ: 1, JJ: 1, TT: 0.25,
+    AKs: 1, AKo: 1, AQs: 0.75, AQo: 0.5, AJs: 0.5,
+    A5s: 1, A4s: 0.75, A3s: 0.5,
+    "65s": 0.25, "54s": 0.25,
+  },
+  "3bet_vs_hj": {
+    AA: 1, KK: 1, QQ: 1, JJ: 0.75, TT: 0.25,
+    AKs: 1, AKo: 1, AQs: 0.5, AQo: 0.25,
+    A5s: 0.75, A4s: 0.5,
+  },
+  "3bet_vs_ep": {
+    // vs UTG/UTG+1/UTG+2/LJ — value heavy, very few bluffs
+    AA: 1, KK: 1, QQ: 0.75, JJ: 0.25,
+    AKs: 1, AKo: 0.75, AQs: 0.25,
+    A5s: 0.5,
   },
 };
 
@@ -201,6 +219,7 @@ const SB: PositionRanges = {
 const BB: PositionRanges = {
   // BB doesn't open — it defends/3bets vs opens
   open: {}, // placeholder — BB never opens
+  // BB 3-bet ranges vs each villain position
   "3bet_vs_btn": {
     AA: 1, KK: 1, QQ: 1, JJ: 1, TT: 0.75, "99": 0.5,
     AKs: 1, AKo: 1, AQs: 1, AQo: 0.75, AJs: 0.75, ATs: 0.5,
@@ -212,6 +231,26 @@ const BB: PositionRanges = {
     AKs: 1, AKo: 1, AQs: 1, AQo: 0.5, AJs: 0.5,
     A5s: 0.75, A4s: 0.75,
     "76s": 0.5, "65s": 0.5,
+  },
+  "3bet_vs_hj": {
+    AA: 1, KK: 1, QQ: 1, JJ: 0.75, TT: 0.25,
+    AKs: 1, AKo: 1, AQs: 0.75, AQo: 0.25, AJs: 0.25,
+    A5s: 0.5, A4s: 0.5,
+    "76s": 0.25,
+  },
+  "3bet_vs_sb": {
+    // SB opens very wide so BB 3-bets somewhat liberally
+    AA: 1, KK: 1, QQ: 1, JJ: 1, TT: 0.75, "99": 0.5,
+    AKs: 1, AKo: 1, AQs: 1, AQo: 1, AJs: 0.75, ATs: 0.5,
+    KQs: 0.75, KQo: 0.5,
+    A5s: 1, A4s: 0.75, A3s: 0.5, A2s: 0.5,
+    "87s": 0.5, "76s": 0.75, "65s": 0.5,
+  },
+  "3bet_vs_ep": {
+    // vs UTG/UTG+1/UTG+2/LJ — very tight, mostly value
+    AA: 1, KK: 1, QQ: 1, JJ: 0.5,
+    AKs: 1, AKo: 0.75,
+    A5s: 0.5,
   },
   "call_open_vs_btn": {
     // Pairs

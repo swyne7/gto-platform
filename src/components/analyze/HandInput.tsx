@@ -11,6 +11,26 @@ import type { BoardCard } from "@/lib/analyzer";
 
 const POSITIONS: Position[] = ["UTG", "UTG+1", "UTG+2", "LJ", "HJ", "CO", "BTN", "SB", "BB"];
 
+// Map a villain position to the correct 3bet range key
+function get3betKey(villainPos: Position | null): string {
+  if (villainPos === "BTN") return "3bet_vs_btn";
+  if (villainPos === "CO")  return "3bet_vs_co";
+  if (villainPos === "HJ")  return "3bet_vs_hj";
+  if (villainPos === "SB")  return "3bet_vs_sb";
+  // UTG, UTG+1, UTG+2, LJ → treat as EP
+  return "3bet_vs_ep";
+}
+
+// Find any available 3bet range for a position (fallback)
+function findAny3bet(heroPos: Position): RangeData {
+  const pos = RANGES[heroPos];
+  if (!pos) return {};
+  for (const key of ["3bet_vs_btn", "3bet_vs_co", "3bet_vs_hj", "3bet_vs_sb", "3bet_vs_ep"]) {
+    if (pos[key] && Object.keys(pos[key]!).length > 0) return pos[key]!;
+  }
+  return {};
+}
+
 const SCENARIO_OPTIONS: { value: PreflopScenario; label: string; desc: string }[] = [
   { value: "single_raised_ip",  label: "SRP — Hero IP",      desc: "You opened or called in position" },
   { value: "single_raised_oop", label: "SRP — Hero OOP",     desc: "You defended BB or called OOP" },
@@ -61,23 +81,27 @@ function getHintRange(
         label: `${heroPos} calling range (select villain to see their opens)`,
       };
     case "three_bet_ip":
-      // Hero is IP in 3-bet pot — show villain's opening range they 3-bet against
+      // Hero is IP in 3-bet pot — show villain's opening range as context
       if (villainPos) {
         return {
           range: RANGES[villainPos]?.["open"] ?? {},
-          label: `${villainPos} opening range (villain's open you 3-bet)`,
+          label: `${villainPos} opening range (villain's open)`,
         };
       }
       return {
-        range: RANGES[heroPos]?.["3bet"] ?? {},
-        label: `${heroPos} 3-bet range (select villain to see their opens)`,
+        range: RANGES[heroPos]?.["open"] ?? {},
+        label: `${heroPos} opening range (select villain to see their range)`,
       };
-    case "three_bet_oop":
-      // Hero 3-bet OOP — show hero's 3-bet range (updates with hero position)
+    case "three_bet_oop": {
+      // Hero 3-bet OOP (BB/SB) — show hero's 3-bet range vs this specific villain
+      const key = get3betKey(villainPos);
+      const range = RANGES[heroPos]?.[key] ?? findAny3bet(heroPos);
+      const villainLabel = villainPos ? ` vs ${villainPos}` : " (select villain for specific range)";
       return {
-        range: RANGES[heroPos]?.["3bet"] ?? {},
-        label: `${heroPos} 3-bet range (your 3-bet)`,
+        range,
+        label: `${heroPos} 3-bet range${villainLabel}`,
       };
+    }
   }
 }
 
