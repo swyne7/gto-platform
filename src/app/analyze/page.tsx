@@ -10,6 +10,7 @@ import HandSummary from "@/components/analyze/HandSummary";
 import { runAnalysis, calculateNewPot } from "@/lib/analyzer";
 import type { BoardCard, PostflopAction, AnalysisResult, HandState, PreflopScenario } from "@/lib/analyzer";
 import type { Position } from "@/lib/training";
+import { SUIT_SYMBOL, SUIT_COLOR } from "@/lib/handEvaluator";
 
 // ── Phase machine ─────────────────────────────────────────────────────────────
 type Phase =
@@ -78,6 +79,40 @@ function phaseToProgress(phase: Phase): number {
   return 4;
 }
 
+function HoleCardBanner({ card1, card2, heroHand }: { card1: BoardCard; card2: BoardCard; heroHand: string }) {
+  function CardFace({ card }: { card: BoardCard }) {
+    return (
+      <span
+        className="inline-flex items-center justify-center rounded-lg font-black text-sm border"
+        style={{
+          width: 40, height: 52,
+          background: "var(--surface)",
+          borderColor: "var(--border)",
+          color: SUIT_COLOR[card.suit],
+          flexShrink: 0,
+        }}
+      >
+        {card.rank}{SUIT_SYMBOL[card.suit]}
+      </span>
+    );
+  }
+  return (
+    <div
+      className="flex items-center gap-3 px-3 py-2 rounded-xl border mb-5"
+      style={{ background: "var(--surface-2)", borderColor: "var(--border)" }}
+    >
+      <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-secondary)" }}>
+        Your hand
+      </span>
+      <div className="flex gap-1.5">
+        <CardFace card={card1} />
+        <CardFace card={card2} />
+      </div>
+      <span className="text-sm font-black" style={{ color: "var(--accent-green)" }}>{heroHand}</span>
+    </div>
+  );
+}
+
 function StepIndicator({ phase }: { phase: Phase }) {
   const active = phaseToProgress(phase);
   return (
@@ -130,8 +165,15 @@ export default function AnalyzePage() {
     setDraft(prev => ({ ...prev, [street]: { ...prev[street], ...partial } }));
   }
 
+  // Hole cards — blocked everywhere on the board
+  const holeCards: BoardCard[] = [
+    ...(draft.heroCard1 ? [draft.heroCard1] : []),
+    ...(draft.heroCard2 ? [draft.heroCard2] : []),
+  ];
+
   // All used cards across the hand (to prevent duplicates)
   const allUsedCards: BoardCard[] = [
+    ...holeCards,
     ...draft.flopCards,
     ...(draft.turnCard ? [draft.turnCard] : []),
     ...(draft.riverCard ? [draft.riverCard] : []),
@@ -266,6 +308,11 @@ export default function AnalyzePage() {
           className="rounded-2xl border p-6"
           style={{ background: "var(--surface)", borderColor: "var(--border)" }}
         >
+          {/* Persistent hole card banner — shown on every step after setup */}
+          {phase !== "setup" && draft.heroCard1 && draft.heroCard2 && (
+            <HoleCardBanner card1={draft.heroCard1} card2={draft.heroCard2} heroHand={draft.heroHand} />
+          )}
+
           {/* SETUP */}
           {phase === "setup" && (
             <HandInput
@@ -292,6 +339,7 @@ export default function AnalyzePage() {
           {phase === "flop_board" && (
             <BoardBuilder
               board={draft.flopCards}
+              blockedCards={holeCards}
               effectiveStackBB={draft.effectiveStackBB}
               potAfterPreflopBB={draft.potAfterPreflopBB}
               preflopScenario={draft.preflopScenario}

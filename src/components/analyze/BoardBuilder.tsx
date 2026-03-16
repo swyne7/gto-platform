@@ -125,6 +125,7 @@ export function CardPicker({ value, onChange, usedCards, label }: CardPickerProp
 
 interface Props {
   board: BoardCard[];
+  blockedCards?: BoardCard[];
   effectiveStackBB: number;
   potAfterPreflopBB: number;
   preflopScenario: string;
@@ -134,7 +135,7 @@ interface Props {
 }
 
 export default function BoardBuilder({
-  board, effectiveStackBB, potAfterPreflopBB, preflopScenario,
+  board, blockedCards = [], effectiveStackBB, potAfterPreflopBB, preflopScenario,
   onChange, onNext, onBack,
 }: Props) {
   const hasFlop = board.length >= 3;
@@ -193,7 +194,7 @@ export default function BoardBuilder({
               label={`Card ${i + 1}`}
               value={board[i] ?? null}
               onChange={card => updateCard(i, card)}
-              usedCards={board.filter((_, idx) => idx !== i)}
+              usedCards={[...blockedCards, ...board.filter((_, idx) => idx !== i)]}
             />
           ))}
         </div>
